@@ -1,5 +1,5 @@
-import { Bar, BarChart, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-} from "recharts";
+import { Bar, BarChart, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, } from "recharts";
+import { PieChart, Pie, Cell} from 'recharts';
 import Navbar from "@/components/Navbar";
 
 interface DataPoint {
@@ -26,7 +26,10 @@ export async function getServerSideProps() {
 
     const electricityRate = 11.4295; // Php/kWh
     const generatedRate = 6.4948; // Php/kWh (for earnings calculation)
-    let totalEarnings = 0;
+    let totalGeneratedEarnings = 0;
+    const totalOctoberConsumption = 505.559334;
+    const totalSeptemberConsumption = 665.8401609;
+    const totalSavingEarnings = (totalSeptemberConsumption - totalOctoberConsumption) * 0.1;
 
     const transformedData = filteredData.map((item: DataPoint) => {
         // Calculate net consumption
@@ -34,8 +37,8 @@ export async function getServerSideProps() {
 
         // If net consumption is less than or equal to 0, price is 0
         const price = netConsumption <= 0 ? 0 : netConsumption * electricityRate;
-        const earnings = netConsumption <= 0 ? Math.abs(netConsumption) * generatedRate : 0;
-        totalEarnings += earnings;
+        const generatedEarnings = netConsumption <= 0 ? Math.abs(netConsumption) * generatedRate : 0;
+        totalGeneratedEarnings += generatedEarnings;
 
         return {
             time: new Date(item.datetime).toLocaleTimeString("en-US", {
@@ -47,14 +50,15 @@ export async function getServerSideProps() {
             consumption: item.consumption || 0,
             generation: item.generation || 0,
             billingAmount: price, // Add the billing amount for the chart
-            earnings: earnings,
+            generatedEarnings: generatedEarnings,
         };
     });
 
     return {
         props: {
             data: transformedData,
-            totalEarnings: totalEarnings.toFixed(2)
+            totalGeneratedEarnings: totalGeneratedEarnings.toFixed(2),
+            totalSavingEarnings: totalSavingEarnings.toFixed(2)
         },
     };
 }
@@ -62,7 +66,7 @@ export async function getServerSideProps() {
 
 
 
-export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], totalEarnings: string }) {
+export default function Dashboard({ data, totalGeneratedEarnings, totalSavingEarnings }: { data: DataPoint[],totalGeneratedEarnings: string,totalSavingEarnings: string }) {
     console.log("Chart data:", data);
     return (
         <div className="relative bg-[#111111] text-white min-h-screen">
@@ -137,20 +141,107 @@ export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], 
                     
                     {/* 3rd Card: Takes 1 cell */}
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
-                        <div className="text-white text-lg font-semibold my-4">Current Earnings This Month</div>
-                        <div className="text-4xl">{totalEarnings} Php</div>
+                        <div className="text-white text-lg font-semibold my-4">Current Earnings from</div>
+                        <div className="flex flex-col justify-between w-[80%] px-8">
+                            <div className="flex flex-row items-center justify-between">
+                                <div className="text-sm text-[#878787]">Solar</div>
+                                <div className="text-sm text-[#878787]">Saving</div>
+                                
+                            </div>
+                            
+                            <div className="flex flex-row items-center justify-between">
+                                <div className="text-2xl">{totalGeneratedEarnings} Php</div>
+                                <div className="border border-[#878787] h-16 mx-4"></div>  {/* Vertical line */}
+                                <div className="text-2xl text-right">{totalSavingEarnings} Php</div>  {/* Placeholder for savings */}
+                            </div>
+                        </div>
                     </div>
 
                     {/* 4th Card: Takes 1 cell */}
-                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
-                        03
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
+                        <div className="text-white text-lg font-semibold mt-4 pb-4">Ave. Token rate per hour</div>
+                        {/* Handle the computation directly inside the card */}
+                        <div className="text-4xl">
+                            {(
+                                (parseFloat(totalGeneratedEarnings) + parseFloat(totalSavingEarnings)) / 48
+                            ).toFixed(2)} Php
+                        </div>
                     </div>
+                                                            
+                    {/* 5th Card: Total Earnings Breakdown */}
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-1 flex flex-col items-center justify-center text-white text-xl font-bold">
+                        <div className="text-white text-lg font-semibold mt-4 pb-4">Total Earnings Breakdown</div>
+                        <ResponsiveContainer width="100%" height={260}> 
+                            <PieChart>
+                                {/* Define the gradients for each segment */}
+                                <defs>
+                                    <linearGradient id="gradientColor1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="#7B8EEA" />
+                                        <stop offset="50%" stopColor="#3B46F1" />
+                                    </linearGradient>
+                                    <linearGradient id="gradientColor2" x1="0%" y1="00%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#FF9500" />
+                                        <stop offset="50%" stopColor="#FF3B30" />
+                                    </linearGradient>
+                                </defs>
+
+                                <Pie 
+                                    data={[ 
+                                        { name: 'Generated Earnings', value: parseFloat(totalGeneratedEarnings) },
+                                        { name: 'Savings Earnings', value: parseFloat(totalSavingEarnings) }
+                                    ]}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    outerRadius={90}
+                                    innerRadius={50}
+                                    stroke="#333333"
+                                >
+                                    {/* Apply individual gradients to each segment */}
+                                    <Cell fill="url(#gradientColor1)" />  {/* Gradient for Generated Earnings */}
+                                    <Cell fill="url(#gradientColor2)" />  {/* Gradient for Savings Earnings */}
+                                </Pie>
+
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: "#1C1C1C",
+                                        border: "1px solid #878787",
+                                        borderRadius: "4px",
+                                        color: "#ffffff",  // Make tooltip text white
+                                    }}
+                                    labelFormatter={(label) => `Time: ${label}`}
+                                    formatter={(value, name) => [
+                                        `${(value as number).toFixed(2)} Php`,  // Formatting the value
+                                        name,
+                                    ]}
+                                />
+
+                                <Legend
+                                    iconSize={12}         // Smaller legend icon size
+                                    formatter={(value) => {
+                                        const totalEarnings = parseFloat(totalGeneratedEarnings) + parseFloat(totalSavingEarnings);
+                                        const percentage = value === 'Generated Earnings' 
+                                            ? (parseFloat(totalGeneratedEarnings) / totalEarnings * 100).toFixed(2)
+                                            : (parseFloat(totalSavingEarnings) / totalEarnings * 100).toFixed(2);
                     
-                    {/* 5th Card: Takes 1 cell */}
-                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
-                        04
+                                        // Apply custom colors to the legend items
+                                        const color = value === 'Generated Earnings' ? '#5765EE' : '#FF3B30'; 
+                                        return (
+                                            <span style={{ color, fontSize: '0.8rem' }}>
+                                                {value} ({percentage}%)
+                                            </span>
+                                        );
+                                    }}
+                                    wrapperStyle={{
+                                        fontSize: '0.8rem',  // Reduce legend font size
+                                        paddingTop: 25,        // Adjust vertical spacing in the legend
+                                        marginBottom: 5,     // Adjust vertical spacing in the legend
+                                    }}
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
                     </div>
-                    
+
+
                     {/* 6th Card: Takes the whole row (col-span-3) */}
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-3 flex flex-col items-center justify-center text-white text-xl font-bold">
                         <div className="text-white text-lg font-semibold my-4">Hourly Cost</div>
