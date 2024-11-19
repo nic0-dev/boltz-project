@@ -24,8 +24,8 @@ export async function getServerSideProps() {
         item.datetime.startsWith("2024-10-01")
     );
 
-    const electricityRate = 11.343; // Php/kWh
-    const generatedRate = 6.6468; // Php/kWh (for earnings calculation)
+    const electricityRate = 11.4295; // Php/kWh
+    const generatedRate = 6.4948; // Php/kWh (for earnings calculation)
     let totalEarnings = 0;
 
     const transformedData = filteredData.map((item: DataPoint) => {
@@ -70,7 +70,7 @@ export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], 
             <div className="px-36 py-8">
                 <div className="flex flex-row gap-4 justify-between w-full">
                     <div className="text-2xl font-bold mb-4">Dashboard</div>
-                    <div className="text-sm text-[#878787]">Currrent Month: October, 2024</div>
+                    <div className="text-sm text-[#878787]">Current Month: October, 2024</div>
                 </div>
                 {/* Cards*/}
                 <div className="h-200vh grid grid-rows-3 grid-cols-3 gap-4">
@@ -135,18 +135,18 @@ export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], 
                         02
                     </div>
                     
-                    {/* 5th Card: Takes 1 cell */}
+                    {/* 3rd Card: Takes 1 cell */}
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
                         <div className="text-white text-lg font-semibold my-4">Current Earnings This Month</div>
                         <div className="text-4xl">{totalEarnings} Php</div>
                     </div>
 
-                    {/* 3rd Card: Takes 1 cell */}
+                    {/* 4th Card: Takes 1 cell */}
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
                         03
                     </div>
                     
-                    {/* 4th Card: Takes 1 cell */}
+                    {/* 5th Card: Takes 1 cell */}
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
                         04
                     </div>
