@@ -42,7 +42,7 @@ export default function Home() {
       
       <section id="how-it-works" className="min-h-screen p-8 flex flex-col items-center gap-2">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-[#FFFFFF] to-[#7B8EEA] bg-clip-text text-transparent">How it Works</h1>
-        <p className="text-[#878787] md:text-lg max-w-2xl text-center items-center">Start maximizing your earnings here. Transform your energy efforts<br></br>into real-world benefits</p>
+        <p className="text-[#878787] md:text-lg max-w-2xl text-center items-center">Start maximizing your earnings here. Transform your energy sustainability efforts<br></br>into real-world benefits</p>
         <div className="flex justify-center items-center gap-8 py-8">
           {/* Card 1 */}
           <div className="bg-[#1C1C1C] w-64 h-80 rounded-lg shadow-lg flex flex-col items-center justify-between p-4">
