@@ -154,12 +154,12 @@ export default function Dashboard({ data, totalGeneratedEarnings, totalSavingEar
 
                     
                     {/* 2nd Card: Takes 1 cell */}
-                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
+                    <div className="bg-gradient-to-tr from-[#AA0600] to-[#FF9500] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
                         <div className="text-white text-lg font-semibold mb-2">
                         {isLoading ? "Loading..." : "Token Balance"}
                         </div>
                         <div className="text-4xl text-center">
-                        {isLoading ? "..." : `${Number(tokenBalance?.displayValue).toFixed(4)} ${tokenBalance?.symbol}`}
+                        {isLoading ? "..." : `${Number(tokenBalance?.displayValue).toFixed(3)} ${tokenBalance?.symbol}`}
                         </div>
                     </div>
                     
@@ -188,7 +188,7 @@ export default function Dashboard({ data, totalGeneratedEarnings, totalSavingEar
                         <div className="text-4xl">
                             {(
                                 (parseFloat(totalGeneratedEarnings) + parseFloat(totalSavingEarnings)) / 48
-                            ).toFixed(2)} Php
+                            ).toFixed(2)} BLTZ
                         </div>
                     </div>
                                                             
