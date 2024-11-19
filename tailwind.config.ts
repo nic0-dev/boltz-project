@@ -11,6 +11,10 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        customBlack: "#111111",
+      },
+      fontFamily: {
+        sans: ['Geist', 'sans-serif'], // Set Geist as the default sans font
       },
     },
   },

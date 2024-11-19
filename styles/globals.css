@@ -2,20 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Geist font variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-geist-sans: 'GeistSans', sans-serif;
+  --background: #111111; /* Dark mode background */
+  --foreground: #ededed; /* Dark mode text color */
 }
 
 body {
+  font-family: 'Geist', sans-serif;/* Set Geist font as default */
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+}
+
+@layer utilities {
+  .shadow-glow {
+    box-shadow: 0 4px 10px rgba(59, 70, 241, 0.6); /* Glow effect around the button */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .shadow-glow:hover {
+    box-shadow: 0 6px 15px rgba(59, 70, 241, 0.8); /* Stronger glow on hover */
+  }
 }

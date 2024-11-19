@@ -1,43 +1,69 @@
-import Image from "next/image";
-import localFont from "next/font/local";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
   return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
+    <div className="relative bg-[#111111] text-white min-h-screen">
+      <Navbar />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="/dashboard"
-            target="_blank"
-            rel="noopener noreferrer"
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-no-repeat bg-contain bg-top opacity-40"
+        style={{
+          backgroundImage: "url('/map.svg')", // Access the SVG from the public folder
+        }}
+      ></div>
+      <div
+        className="absolute bottom-0 left-0 right-0 h-32"
+        style={{
+          background: "linear-gradient(to bottom, rgba(17, 17, 17, 0), #111111)",
+        }}
+      ></div>
+
+      {/* Hero Section */}
+      <div className="h-screen flex flex-col justify-center items-center text-center relative z-10">
+        <h1 className="text-5xl font-bold bg-gradient-to-r from-[#3B46F1] to-[#7B8EEA] bg-clip-text text-transparent">
+          Sustainable, Transparent,
+        </h1>
+        <h1 className="text-5xl font-bold bg-gradient-to-r from-[#3B46F1] to-[#7B8EEA] bg-clip-text text-transparent">
+          Secure
+        </h1>
+        <p className="py-8 text-xl max-w-2xl">
+        Dedicated to creating a positive and lasting environmental impact while promoting transparency and security
+        </p>
+        <a href="/dashboard" className="flex items-center font-medium px-6 py-3 rounded-lg bg-gradient-to-b from-[#7B8EEA] to-[#3B46F1] text-white shadow-glow transition-transform hover:scale-105">
+          Get Started
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="ml-2"
           >
-            Get Started
-          </a>
-        </div>
-      </main>
+            <path d="M5 12l14 0" />
+            <path d="M13 18l6 -6" />
+            <path d="M13 6l6 6" />
+          </svg>
+        </a>
+      </div>
+
+      {/* Sections */}
+      <section id="how-it-works" className="min-h-screen p-8">
+        <h1 className="text-4xl font-bold">How it Works</h1>
+        <p className="mt-4">Detailed explanation...</p>
+      </section>
+      <section id="dashboard" className="min-h-screen p-8">
+        <h1 className="text-4xl font-bold">Dashboard</h1>
+        <p className="mt-4">Dashboard details...</p>
+      </section>
+      <section id="boltz-conversion" className="min-h-screen p-8">
+        <h1 className="text-4xl font-bold">$BOLTZ Conversion</h1>
+        <p className="mt-4">Conversion details...</p>
+      </section>
     </div>
   );
 }
