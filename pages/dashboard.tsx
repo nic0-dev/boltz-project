@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+import { Bar, BarChart, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
 import Navbar from "@/components/Navbar";
 
@@ -132,6 +132,12 @@ export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], 
                         02
                     </div>
                     
+                    {/* 5th Card: Takes 1 cell */}
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
+                        <div className="text-white text-lg font-semibold my-4">Current Earnings</div>
+                        <div className="text-4xl">{totalEarnings} Php</div>
+                    </div>
+
                     {/* 3rd Card: Takes 1 cell */}
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
                         03
@@ -142,17 +148,21 @@ export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], 
                         04
                     </div>
                     
-                    {/* 5th Card: Takes 1 cell */}
-                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
-                        <div className="text-white text-lg font-semibold my-4">Current Earnings</div>
-                        <div className="text-4xl">{totalEarnings} Php</div>
-                    </div>
-                    
                     {/* 6th Card: Takes the whole row (col-span-3) */}
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-3 flex flex-col items-center justify-center text-white text-xl font-bold">
                         <div className="text-white text-lg font-semibold my-4">Hourly Cost</div>
                         <ResponsiveContainer width="95%" height={300}>
-                            <LineChart data={data}>
+                            <BarChart
+                                data={data}
+                                barCategoryGap="20%"  // Increase the space between categories
+                                barGap={24}            // Increase the space between bars within the same category
+                            >
+                                <defs>
+                                    <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="#FF9500" />
+                                        <stop offset="100%" stopColor="#FF3B30" />
+                                    </linearGradient>
+                                </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
                                 <XAxis
                                     dataKey="time"
@@ -184,17 +194,21 @@ export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], 
                                     ]}
                                 />
                                 <Legend />
-                                <Line
-                                    type="monotone"
+                                
+                                {/* Bar for Billing Amount with Gradient */}
+                                <Bar
                                     dataKey="billingAmount"  // Use billingAmount here
-                                    stroke="#FF9500"
-                                    strokeWidth={2}
-                                    dot={false}
+                                    fill="url(#gradientColor)"  // Apply the gradient
+                                    stroke="#FF3B30"           // Set stroke to #FF3B30
+                                    strokeWidth={2}            // Optional: adjust stroke width
+                                    radius={[4, 4, 0, 0]}      // Rounded corners on the top of the bar
                                     name="Bill"
                                 />
-                            </LineChart>
+                            </BarChart>
                         </ResponsiveContainer>
                     </div>
+
+
 
                     </div>
 
