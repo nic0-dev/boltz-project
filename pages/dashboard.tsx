@@ -159,7 +159,10 @@ export default function Dashboard({ data, totalGeneratedEarnings, totalSavingEar
                         {isLoading ? "Loading..." : "Token Balance"}
                         </div>
                         <div className="text-4xl text-center">
-                        {isLoading ? "..." : `${Number(tokenBalance?.displayValue).toFixed(3)} ${tokenBalance?.symbol}`}
+                        {isLoading ? "..." : `${Number(tokenBalance?.displayValue).toFixed(3)}`}
+                        </div>
+                        <div className="text-4xl text-center">
+                        BLTZ
                         </div>
                     </div>
                     
