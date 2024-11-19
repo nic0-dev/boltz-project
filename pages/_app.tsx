@@ -3,7 +3,7 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { ThirdwebProvider } from "@thirdweb-dev/react";
 
-const activeChain = "ethereum";
+const activeChain = "arbitrum-sepolia";
 // Define the main app component
 function MyApp({ Component, pageProps }: AppProps) {
   // Return the ThirdwebProvider component, wrapping the entire app

@@ -1,6 +1,8 @@
 import { Bar, BarChart, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, } from "recharts";
 import { PieChart, Pie, Cell} from 'recharts';
 import Navbar from "@/components/Navbar";
+import { useContract } from "@thirdweb-dev/react";
+import { ConnectWallet, darkTheme, useAddress, useTokenBalance } from "@thirdweb-dev/react";
 
 interface DataPoint {
     consumption: number;
@@ -63,11 +65,28 @@ export async function getServerSideProps() {
     };
 }
 
-
-
-
 export default function Dashboard({ data, totalGeneratedEarnings, totalSavingEarnings }: { data: DataPoint[],totalGeneratedEarnings: string,totalSavingEarnings: string }) {
-    console.log("Chart data:", data);
+    const address = useAddress();
+    const { contract: stakeTokenContract } = useContract(process.env.NEXT_PUBLIC_TOKEN_ADDRESS);
+    const { data: tokenBalance, isLoading } = useTokenBalance(stakeTokenContract, address);
+    if(!address) {
+        return (
+            <div className="h-screen flex flex-col justify-center items-center">
+                <div className="h2 text-white my-4">Please Connect a Wallet</div>
+                <ConnectWallet
+                    theme={darkTheme({
+                        colors: {
+                        primaryButtonText: "hsl(0, 100%, 99%)",
+                        primaryButtonBg: "hsl(0, 0%, 11%)",
+                        secondaryButtonHoverBg: "hsl(228, 2%, 28%)",
+                        },
+                    })}
+                modalTitle=" "
+                modalTitleIconUrl=""
+                />
+            </div>
+        );
+    }
     return (
         <div className="relative bg-[#111111] text-white min-h-screen">
             <Navbar />
@@ -135,8 +154,13 @@ export default function Dashboard({ data, totalGeneratedEarnings, totalSavingEar
 
                     
                     {/* 2nd Card: Takes 1 cell */}
-                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
-                        02
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
+                        <div className="text-white text-lg font-semibold mb-2">
+                        {isLoading ? "Loading..." : "Token Balance"}
+                        </div>
+                        <div className="text-4xl">
+                        {isLoading ? "..." : `${tokenBalance?.displayValue} ${tokenBalance?.symbol}`}
+                        </div>
                     </div>
                     
                     {/* 3rd Card: Takes 1 cell */}

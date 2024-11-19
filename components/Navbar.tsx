@@ -132,6 +132,8 @@ export default function Navbar() {
                     secondaryButtonHoverBg: "hsl(228, 2%, 28%)",
                     },
                 })}
+                modalTitle=" "
+                modalTitleIconUrl=""
                 />
           </div>
 
