@@ -1,18 +1,23 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+} from "recharts";
 import Navbar from "@/components/Navbar";
-import path from "path";
-import fs from "fs";
 
 interface DataPoint {
     consumption: number;
     generation: number;
     datetime: string; // ISO 8601 format
 }
-  
+
 export async function getServerSideProps() {
-    const filePath = path.join(process.cwd(), "public", "data.json");
-    const fileContents = fs.readFileSync(filePath, "utf8");
-    const rawData: DataPoint[] = JSON.parse(fileContents);
+    let rawData: DataPoint[] = [];
+
+    try {
+        // Fetch data.json from the public folder
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/data.json`);
+        rawData = await res.json();
+    } catch (error) {
+        console.error("Error fetching data.json:", error);
+    }
 
     // Filter data for a specific date (e.g., "2024-01-01")
     const filteredData = rawData.filter((item) =>
@@ -36,7 +41,10 @@ export async function getServerSideProps() {
     };
 }
 
+
+
 export default function Dashboard({ data }: { data: DataPoint[] }) {
+    console.log("Chart data:", data);
     return (
         <div className="relative bg-[#111111] text-white min-h-screen">
             <Navbar />
@@ -45,19 +53,16 @@ export default function Dashboard({ data }: { data: DataPoint[] }) {
                 {/* Cards*/}
                 <div className="h-200vh grid grid-rows-3 grid-cols-3 gap-4">
                 <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-2 flex flex-col items-center justify-center p-4">
-                    <div className="text-white text-lg font-semibold mb-4">Hourly Energy Profile</div>
-                        <ResponsiveContainer width="95%">
+                        <div className="text-white text-lg font-semibold mb-4">Hourly Energy Profile</div>
+                        <ResponsiveContainer width="95%" height={300}>
                             <LineChart data={data}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
-                                
                                 <XAxis
                                     dataKey="time"
                                     stroke="#ffffff"
-                                    interval={4} // Adjust interval to reduce clutter
+                                    interval={2}
                                     tick={{ fontSize: 12, fill: "#ffffff" }}
                                 />
-
-                                {/* Y-Axis */}
                                 <YAxis
                                     stroke="#ffffff"
                                     tick={{ fontSize: 12, fill: "#ffffff" }}
@@ -69,14 +74,11 @@ export default function Dashboard({ data }: { data: DataPoint[] }) {
                                         fontSize: 14,
                                     }}
                                 />
-
-                                {/* Tooltip */}
                                 <Tooltip
                                     contentStyle={{
                                         backgroundColor: "#1C1C1C",
                                         border: "1px solid #878787",
                                         borderRadius: "4px",
-                                        color: "[#111111]/50",
                                     }}
                                     labelFormatter={(label) => `Time: ${label}`}
                                     formatter={(value, name) => [
@@ -84,10 +86,7 @@ export default function Dashboard({ data }: { data: DataPoint[] }) {
                                         name,
                                     ]}
                                 />
-
                                 <Legend />
-
-                                {/* Lines */}
                                 <Line
                                     type="monotone"
                                     dataKey="consumption"

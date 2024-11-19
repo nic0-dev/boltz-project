@@ -1,12 +1,14 @@
-import path from 'path';
-import fs from 'fs';
+export default async function handler(req, res) {
+    try {
+        // Access the public folder directly
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/data.json`);
+        const data = await response.json();
 
-export default function handler(req, res) {
-    // Resolve the path to the data.json file in the public folder
-    const filePath = path.join(process.cwd(), 'public', 'data.json');
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    const data = JSON.parse(fileContents);
+        // Send the data in the API response
+        res.status(200).json({ data });
+    } catch (error) {
+        console.error("Error fetching data from /public/data.json:", error);
 
-    // Ensure the data is parsed correctly and respond
-    res.status(200).json(data);
+        res.status(500).json({ error: "Failed to fetch mock data." });
+    }
 }
