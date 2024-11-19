@@ -97,7 +97,7 @@ export default function Navbar() {
                 <li>
                   <Link
                     className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
-                    href="/about"
+                    href="/#how-it-works"
                   >
                     How it Works
                   </Link>

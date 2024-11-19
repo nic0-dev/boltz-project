@@ -7,6 +7,10 @@
   --font-geist-sans: 'GeistSans', sans-serif;
   --background: #111111; /* Dark mode background */
   --foreground: #ededed; /* Dark mode text color */
+  --scroll-offset: 4rem;
+}
+[id] {
+  scroll-margin-top: var(--scroll-offset);
 }
 
 body {
