@@ -110,39 +110,42 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let tokenResponse = await fetchAuthToken();
+                const tokenResponse = await fetchAuthToken();
                 if (!tokenResponse) {
                     setError("Authentication failed. Please log in again.");
                     return;
                 }
-
-                let { idToken, refreshToken } = tokenResponse;
-
+    
+                const { idToken, refreshToken } = tokenResponse;
+    
+                // Attempt to fetch meter data
                 let data = await fetchLatestMeterData(idToken);
+    
                 if (!data) {
                     console.warn("Attempting to refresh token...");
-                    idToken = await refreshAuthToken(refreshToken);
-
-                    if (!idToken) {
+                    const newIdToken = await refreshAuthToken(refreshToken);
+    
+                    if (!newIdToken) {
                         setError("Failed to refresh token. Please log in again.");
                         return;
                     }
-
-                    data = await fetchLatestMeterData(idToken);
+    
+                    data = await fetchLatestMeterData(newIdToken);
+    
                     if (!data) {
-                        setError("Failed to fetch meter data after refreshing token.");
+                        setError("Failed to fetch meter data.");
                         return;
                     }
                 }
-
+    
                 setMeterData(data);
             } catch (err) {
                 setError((err as Error).message);
             }
         };
-
+    
         fetchData();
-    }, []);
+    }, []);    
 
     return (
         <div className="p-8">
