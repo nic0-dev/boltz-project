@@ -1,5 +1,11 @@
 [
     {
+        "consumption": 1.86743725944,
+        "generation": 0,
+        "datetime": "2024-01-01T00:00:00Z",
+        "time": "00:00 AM"
+    },
+    {
         "consumption": 1.88293725944,
         "generation": 0,
         "datetime": "2024-01-01T01:00:00Z",

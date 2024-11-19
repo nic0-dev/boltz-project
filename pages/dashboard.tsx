@@ -15,8 +15,6 @@ export async function getServerSideProps() {
         // Fetch the data using the NEXT_PUBLIC_SITE_URL environment variable
         const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/data.json`);
         rawData = await res.json();
-
-        console.log("Fetched data:", rawData); // Debugging log
     } catch (error) {
         console.error("Error fetching data.json:", error);
     }
@@ -26,14 +24,27 @@ export async function getServerSideProps() {
         item.datetime.startsWith("2024-01-01")
     );
 
-    const transformedData = filteredData.map((item: DataPoint) => ({
-        time: new Date(item.datetime).toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-        }),
-        consumption: item.consumption || 0,
-        generation: item.generation || 0,
-    }));
+    const electricityRate = 11.343; // Php/kWh
+
+    const transformedData = filteredData.map((item: DataPoint) => {
+        // Calculate net consumption
+        const netConsumption = item.consumption - item.generation;
+
+        // If net consumption is less than or equal to 0, price is 0
+        const price = netConsumption <= 0 ? 0 : netConsumption * electricityRate;
+
+        return {
+            time: new Date(item.datetime).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+                timeZone: "UTC",
+            }),
+            consumption: item.consumption || 0,
+            generation: item.generation || 0,
+            billingAmount: price, // Add the billing amount for the chart
+        };
+    });
 
     return {
         props: {
@@ -54,7 +65,7 @@ export default function Dashboard({ data }: { data: DataPoint[] }) {
                 <div className="text-2xl font-bold mb-4">Dashboard</div>
                 {/* Cards*/}
                 <div className="h-200vh grid grid-rows-3 grid-cols-3 gap-4">
-                <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-2 flex flex-col items-center justify-center p-4">
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-2 flex flex-col items-center justify-center p-4">
                         <div className="text-white text-lg font-semibold mb-4">Hourly Energy Profile</div>
                         <ResponsiveContainer width="95%" height={300}>
                             <LineChart data={data}>
@@ -131,9 +142,53 @@ export default function Dashboard({ data }: { data: DataPoint[] }) {
                     </div>
                     
                     {/* 6th Card: Takes the whole row (col-span-3) */}
-                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-3 flex items-center justify-center text-white text-xl font-bold">
-                        06
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-3 flex flex-col items-center justify-center text-white text-xl font-bold">
+                        <div className="text-white text-lg font-semibold my-4">Hourly Bill</div>
+                        <ResponsiveContainer width="95%" height={300}>
+                            <LineChart data={data}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
+                                <XAxis
+                                    dataKey="time"
+                                    stroke="#ffffff"
+                                    interval={2}
+                                    tick={{ fontSize: 12, fill: "#ffffff" }}
+                                />
+                                <YAxis
+                                    stroke="#ffffff"
+                                    tick={{ fontSize: 12, fill: "#ffffff" }}
+                                    label={{
+                                        value: "Php",
+                                        angle: -90,
+                                        position: "insideLeft",
+                                        fill: "#ffffff",
+                                        fontSize: 14,
+                                    }}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: "#1C1C1C",
+                                        border: "1px solid #878787",
+                                        borderRadius: "4px",
+                                    }}
+                                    labelFormatter={(label) => `Time: ${label}`}
+                                    formatter={(value, name) => [
+                                        `${(value as number).toFixed(4)} Php`,
+                                        name,
+                                    ]}
+                                />
+                                <Legend />
+                                <Line
+                                    type="monotone"
+                                    dataKey="billingAmount"  // Use billingAmount here
+                                    stroke="#FF9500"
+                                    strokeWidth={2}
+                                    dot={false}
+                                    name="Bill"
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
                     </div>
+
                     </div>
 
             </div>
