@@ -57,10 +57,6 @@ export default function Home() {
         <h1 className="text-4xl font-bold">How it Works</h1>
         <p className="mt-4">Detailed explanation...</p>
       </section>
-      <section id="dashboard" className="min-h-screen p-8">
-        <h1 className="text-4xl font-bold">Dashboard</h1>
-        <p className="mt-4">Dashboard details...</p>
-      </section>
       <section id="boltz-conversion" className="min-h-screen p-8">
         <h1 className="text-4xl font-bold">$BOLTZ Conversion</h1>
         <p className="mt-4">Conversion details...</p>

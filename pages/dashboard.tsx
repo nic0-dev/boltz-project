@@ -25,6 +25,8 @@ export async function getServerSideProps() {
     );
 
     const electricityRate = 11.343; // Php/kWh
+    const generatedRate = 6.6468; // Php/kWh (for earnings calculation)
+    let totalEarnings = 0;
 
     const transformedData = filteredData.map((item: DataPoint) => {
         // Calculate net consumption
@@ -32,6 +34,8 @@ export async function getServerSideProps() {
 
         // If net consumption is less than or equal to 0, price is 0
         const price = netConsumption <= 0 ? 0 : netConsumption * electricityRate;
+        const earnings = netConsumption <= 0 ? Math.abs(netConsumption) * generatedRate : 0;
+        totalEarnings += earnings;
 
         return {
             time: new Date(item.datetime).toLocaleTimeString("en-US", {
@@ -43,12 +47,14 @@ export async function getServerSideProps() {
             consumption: item.consumption || 0,
             generation: item.generation || 0,
             billingAmount: price, // Add the billing amount for the chart
+            earnings: earnings,
         };
     });
 
     return {
         props: {
             data: transformedData,
+            totalEarnings: totalEarnings.toFixed(2)
         },
     };
 }
@@ -56,7 +62,7 @@ export async function getServerSideProps() {
 
 
 
-export default function Dashboard({ data }: { data: DataPoint[] }) {
+export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], totalEarnings: string }) {
     console.log("Chart data:", data);
     return (
         <div className="relative bg-[#111111] text-white min-h-screen">
@@ -137,13 +143,14 @@ export default function Dashboard({ data }: { data: DataPoint[] }) {
                     </div>
                     
                     {/* 5th Card: Takes 1 cell */}
-                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
-                        05
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
+                        <div className="text-white text-lg font-semibold my-4">Current Earnings</div>
+                        <div className="text-4xl">{totalEarnings} Php</div>
                     </div>
                     
                     {/* 6th Card: Takes the whole row (col-span-3) */}
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-3 flex flex-col items-center justify-center text-white text-xl font-bold">
-                        <div className="text-white text-lg font-semibold my-4">Hourly Bill</div>
+                        <div className="text-white text-lg font-semibold my-4">Hourly Cost</div>
                         <ResponsiveContainer width="95%" height={300}>
                             <LineChart data={data}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
