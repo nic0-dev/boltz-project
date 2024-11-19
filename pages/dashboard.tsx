@@ -1,172 +1,141 @@
-const fetchAuthToken = async (): Promise<{ idToken: string; refreshToken: string } | null> => {
-    const authUrl = "https://j69peucuxb.execute-api.ap-southeast-1.amazonaws.com/account/verify";
-    const username = "meralcocustomer4@gmail.com";
-    const password = "Meralco@2024";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import Navbar from "@/components/Navbar";
+import path from "path";
+import fs from "fs";
 
-    try {
-        const credentials = btoa(`${username}:${password}`);
-        const response = await fetch(authUrl, {
-            method: "POST",
-            headers: {
-                "Authorization": `Basic ${credentials}`,
-                "Content-Type": "application/json",
-            },
-        });
+interface DataPoint {
+    consumption: number;
+    generation: number;
+    datetime: string; // ISO 8601 format
+}
+  
+export async function getServerSideProps() {
+    const filePath = path.join(process.cwd(), "public", "data.json");
+    const fileContents = fs.readFileSync(filePath, "utf8");
+    const rawData: DataPoint[] = JSON.parse(fileContents);
 
-        if (!response.ok) {
-            const errorDetails = await response.json();
-            console.error("Error response from API:", errorDetails);
-            throw new Error(`Failed to fetch token: ${response.statusText}`);
-        }
+    // Filter data for a specific date (e.g., "2024-01-01")
+    const filteredData = rawData.filter((item) =>
+        item.datetime.startsWith("2024-01-01")
+    );
 
-        const data = await response.json();
-        console.log("Token data:", data);
+    // Transform the data to include only `time` and values
+    const transformedData = filteredData.map((item) => ({
+        time: new Date(item.datetime).toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+        }),
+        consumption: item.consumption || 0,
+        generation: item.generation || 0,
+    }));
 
-        return {
-            idToken: data.data.idToken,
-            refreshToken: data.data.refreshToken,
-        };
-    } catch (error) {
-        console.error("Error fetching token:", (error as Error).message);
-        return null;
-    }
-};
-
-const refreshAuthToken = async (refreshToken: string): Promise<string | null> => {
-    const refreshUrl = "https://j69peucuxb.execute-api.ap-southeast-1.amazonaws.com/account/refresh";
-
-    try {
-        const response = await fetch(refreshUrl, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${refreshToken}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                token: refreshToken,
-                email: "meralcocustomer4@gmail.com",
-            }),
-        });
-
-        if (!response.ok) {
-            const errorDetails = await response.json();
-            console.error("Error refreshing token:", errorDetails);
-            throw new Error(`Failed to refresh token: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log("Refreshed Token Data:", data);
-
-        return data.data.idToken; // Return the new idToken
-    } catch (error) {
-        console.error("Error refreshing token:", (error as Error).message);
-        return null;
-    }
-};
-
-const fetchLatestMeterData = async (idToken: string): Promise<MeterData | null> => {
-    const meterApiUrl = "https://j69peucuxb.execute-api.ap-southeast-1.amazonaws.com/meter/latest";
-    const meterId = "MTR0004";
-
-    try {
-        const response = await fetch(`${meterApiUrl}?meterId=${meterId}`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${idToken}`,
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (!response.ok) {
-            const errorDetails = await response.json();
-            console.error("Error fetching meter data:", errorDetails);
-            throw new Error(`Failed to fetch meter data: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log("Meter Data:", data);
-        return data.data;
-    } catch (error) {
-        console.error("Error fetching meter data:", (error as Error).message);
-        return null;
-    }
-};
-
-import { useEffect, useState } from "react";
-
-interface MeterData {
-    meterId: string;
-    consumption_kWh: number;
-    demand_kW: number;
-    powerFactor: number;
-    startDate: string;
-    endDate: string;
+    return {
+        props: {
+            data: transformedData,
+        },
+    };
 }
 
-export default function Dashboard() {
-    const [meterData, setMeterData] = useState<MeterData | null>(null);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const tokenResponse = await fetchAuthToken();
-                if (!tokenResponse) {
-                    setError("Authentication failed. Please log in again.");
-                    return;
-                }
-    
-                const { idToken, refreshToken } = tokenResponse;
-    
-                // Attempt to fetch meter data
-                let data = await fetchLatestMeterData(idToken);
-    
-                if (!data) {
-                    console.warn("Attempting to refresh token...");
-                    const newIdToken = await refreshAuthToken(refreshToken);
-    
-                    if (!newIdToken) {
-                        setError("Failed to refresh token. Please log in again.");
-                        return;
-                    }
-    
-                    data = await fetchLatestMeterData(newIdToken);
-    
-                    if (!data) {
-                        setError("Failed to fetch meter data.");
-                        return;
-                    }
-                }
-    
-                setMeterData(data);
-            } catch (err) {
-                setError((err as Error).message);
-            }
-        };
-    
-        fetchData();
-    }, []);    
-
+export default function Dashboard({ data }: { data: DataPoint[] }) {
     return (
-        <div className="p-8">
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-            {error ? (
-                <p className="text-red-500">{error}</p>
-            ) : meterData ? (
-                <div className="mt-4">
-                    <h2 className="text-xl font-semibold">Latest Meter Data</h2>
-                    <ul className="list-disc pl-5 mt-4 text-white">
-                        <li><strong>Meter ID:</strong> {meterData.meterId}</li>
-                        <li><strong>Consumption (kWh):</strong> {meterData.consumption_kWh}</li>
-                        <li><strong>Demand (kW):</strong> {meterData.demand_kW}</li>
-                        <li><strong>Power Factor:</strong> {meterData.powerFactor}</li>
-                        <li><strong>Start Date:</strong> {new Date(meterData.startDate).toLocaleString()}</li>
-                        <li><strong>End Date:</strong> {new Date(meterData.endDate).toLocaleString()}</li>
-                    </ul>
-                </div>
-            ) : (
-                <p>Loading...</p>
-            )}
+        <div className="relative bg-[#111111] text-white min-h-screen">
+            <Navbar />
+            <div className="px-36 py-8">
+                <div className="text-2xl font-bold mb-4">Dashboard</div>
+                {/* Cards*/}
+                <div className="h-200vh grid grid-rows-3 grid-cols-3 gap-4">
+                <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-2 flex flex-col items-center justify-center p-4">
+                    <div className="text-white text-lg font-semibold mb-4">Hourly Energy Profile</div>
+                        <ResponsiveContainer width="95%">
+                            <LineChart data={data}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
+                                
+                                <XAxis
+                                    dataKey="time"
+                                    stroke="#ffffff"
+                                    interval={4} // Adjust interval to reduce clutter
+                                    tick={{ fontSize: 12, fill: "#ffffff" }}
+                                />
+
+                                {/* Y-Axis */}
+                                <YAxis
+                                    stroke="#ffffff"
+                                    tick={{ fontSize: 12, fill: "#ffffff" }}
+                                    label={{
+                                        value: "kWh",
+                                        angle: -90,
+                                        position: "insideLeft",
+                                        fill: "#ffffff",
+                                        fontSize: 14,
+                                    }}
+                                />
+
+                                {/* Tooltip */}
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: "#1C1C1C",
+                                        border: "1px solid #878787",
+                                        borderRadius: "4px",
+                                        color: "[#111111]/50",
+                                    }}
+                                    labelFormatter={(label) => `Time: ${label}`}
+                                    formatter={(value, name) => [
+                                        `${(value as number).toFixed(4)} kWh`,
+                                        name,
+                                    ]}
+                                />
+
+                                <Legend />
+
+                                {/* Lines */}
+                                <Line
+                                    type="monotone"
+                                    dataKey="consumption"
+                                    stroke="#FF9500"
+                                    strokeWidth={2}
+                                    dot={false}
+                                    name="Consumption"
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="generation"
+                                    stroke="#7B8EEA"
+                                    strokeWidth={2}
+                                    dot={false}
+                                    name="Generation"
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    
+                    {/* 2nd Card: Takes 1 cell */}
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
+                        02
+                    </div>
+                    
+                    {/* 3rd Card: Takes 1 cell */}
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
+                        03
+                    </div>
+                    
+                    {/* 4th Card: Takes 1 cell */}
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
+                        04
+                    </div>
+                    
+                    {/* 5th Card: Takes 1 cell */}
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex items-center justify-center text-white text-xl font-bold">
+                        05
+                    </div>
+                    
+                    {/* 6th Card: Takes the whole row (col-span-3) */}
+                    <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-3 flex items-center justify-center text-white text-xl font-bold">
+                        06
+                    </div>
+                    </div>
+
+            </div>
         </div>
     );
 }
