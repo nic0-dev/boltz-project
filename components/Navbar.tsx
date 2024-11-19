@@ -97,14 +97,6 @@ export default function Navbar() {
                 <li>
                   <Link
                     className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
-                    href="/dashboard"
-                  >
-                    Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
                     href="/about"
                   >
                     How it Works
@@ -116,6 +108,14 @@ export default function Navbar() {
                     href="/convert"
                   >
                     Convert
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
+                    href="/dashboard"
+                  >
+                    Dashboard
                   </Link>
                 </li>
               </ul>

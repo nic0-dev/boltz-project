@@ -21,13 +21,13 @@ export default function Home() {
 
       {/* Hero Section */}
       <div className="h-screen flex flex-col justify-center items-center text-center relative z-10">
-        <h1 className="text-5xl font-bold bg-gradient-to-r from-[#3B46F1] to-[#7B8EEA] bg-clip-text text-transparent">
-          Small Change, Big 
+        <h1 className="text-6xl font-bold bg-gradient-to-r from-[#3B46F1] to-[#7B8EEA] bg-clip-text text-transparent">
+          Small Change,
         </h1>
-        <h1 className="text-5xl font-bold bg-gradient-to-r from-[#3B46F1] to-[#7B8EEA] bg-clip-text text-transparent">
-          Impact
+        <h1 className="text-6xl font-bold bg-gradient-to-r from-[#3B46F1] to-[#7B8EEA] bg-clip-text text-transparent">
+          Big Impact
         </h1>
-        <p className="py-8 text-xl max-w-2xl">
+        <p className="py-12 text-[#BFBFBF] font-medium md:text-lg max-w-2xl">
         Dedicated to creating a positive and lasting environmental impact while promoting transparency and security
         </p>
         <Link href="/dashboard" className="flex items-center font-medium px-6 py-3 rounded-lg bg-gradient-to-b from-[#7B8EEA] to-[#3B46F1] text-white shadow-glow transition-transform hover:scale-105">
