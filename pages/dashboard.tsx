@@ -9,23 +9,24 @@ interface DataPoint {
 }
 
 export async function getServerSideProps() {
-    let rawData: DataPoint[] = [];
+    let rawData = [];
 
     try {
-        // Fetch data.json from the public folder
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/data.json`);
+        // Fetch the data using the NEXT_PUBLIC_SITE_URL environment variable
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/data.json`);
         rawData = await res.json();
+
+        console.log("Fetched data:", rawData); // Debugging log
     } catch (error) {
         console.error("Error fetching data.json:", error);
     }
 
-    // Filter data for a specific date (e.g., "2024-01-01")
-    const filteredData = rawData.filter((item) =>
+    // Filter and transform the data
+    const filteredData = rawData.filter((item: DataPoint) =>
         item.datetime.startsWith("2024-01-01")
     );
 
-    // Transform the data to include only `time` and values
-    const transformedData = filteredData.map((item) => ({
+    const transformedData = filteredData.map((item: DataPoint) => ({
         time: new Date(item.datetime).toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",
@@ -40,6 +41,7 @@ export async function getServerSideProps() {
         },
     };
 }
+
 
 
 
