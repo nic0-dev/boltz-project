@@ -5,7 +5,6 @@ export default function Home() {
   return (
     <div className="relative bg-[#111111] text-white min-h-screen">
       <Navbar />
-
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-no-repeat bg-contain bg-top opacity-40"
@@ -51,7 +50,6 @@ export default function Home() {
           </svg>
         </Link>
       </div>
-
       {/* Sections */}
       <section id="how-it-works" className="min-h-screen p-8">
         <h1 className="text-4xl font-bold">How it Works</h1>
