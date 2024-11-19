@@ -145,7 +145,7 @@ export default function Dashboard({ data, totalGeneratedEarnings, totalSavingEar
                         <div className="flex flex-col justify-between w-[80%] px-8">
                             <div className="flex flex-row items-center justify-between">
                                 <div className="text-sm text-[#878787]">Solar</div>
-                                <div className="text-sm text-[#878787]">Saving</div>
+                                <div className="text-sm text-[#878787]">Savings</div>
                                 
                             </div>
                             
@@ -201,19 +201,7 @@ export default function Dashboard({ data, totalGeneratedEarnings, totalSavingEar
                                     <Cell fill="url(#gradientColor2)" />  {/* Gradient for Savings Earnings */}
                                 </Pie>
 
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: "#1C1C1C",
-                                        border: "1px solid #878787",
-                                        borderRadius: "4px",
-                                        color: "#ffffff",  // Make tooltip text white
-                                    }}
-                                    labelFormatter={(label) => `Time: ${label}`}
-                                    formatter={(value, name) => [
-                                        `${(value as number).toFixed(2)} Php`,  // Formatting the value
-                                        name,
-                                    ]}
-                                />
+                                
 
                                 <Legend
                                     iconSize={12}         // Smaller legend icon size
