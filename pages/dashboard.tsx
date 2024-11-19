@@ -21,7 +21,7 @@ export async function getServerSideProps() {
 
     // Filter and transform the data
     const filteredData = rawData.filter((item: DataPoint) =>
-        item.datetime.startsWith("2024-01-01")
+        item.datetime.startsWith("2024-10-01")
     );
 
     const electricityRate = 11.343; // Php/kWh
@@ -68,7 +68,10 @@ export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], 
         <div className="relative bg-[#111111] text-white min-h-screen">
             <Navbar />
             <div className="px-36 py-8">
-                <div className="text-2xl font-bold mb-4">Dashboard</div>
+                <div className="flex flex-row gap-4 justify-between w-full">
+                    <div className="text-2xl font-bold mb-4">Dashboard</div>
+                    <div className="text-sm text-[#878787]">Currrent Month: October, 2024</div>
+                </div>
                 {/* Cards*/}
                 <div className="h-200vh grid grid-rows-3 grid-cols-3 gap-4">
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg col-span-2 flex flex-col items-center justify-center p-4">
@@ -134,7 +137,7 @@ export default function Dashboard({ data, totalEarnings }: { data: DataPoint[], 
                     
                     {/* 5th Card: Takes 1 cell */}
                     <div className="bg-[#1C1C1C] border border-[#333333] rounded-lg flex flex-col items-center justify-center text-white text-xl font-bold">
-                        <div className="text-white text-lg font-semibold my-4">Current Earnings</div>
+                        <div className="text-white text-lg font-semibold my-4">Current Earnings This Month</div>
                         <div className="text-4xl">{totalEarnings} Php</div>
                     </div>
 
