@@ -1,7 +1,7 @@
 # $BOLTZ (BLTZ): Decentralized Net Metering and Tracking System on Arbitrum Blockchain
 
-Champion Submission for Meralco's IDOL Hackathon 2024
-Developed by Team KuryentEEE
+Champion Submission for Meralco's IDOL Hackathon 2024. <br>
+Developed by Team KuryentEEE.
 
 ## Overview
 
