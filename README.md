@@ -3,6 +3,8 @@
 Champion Submission for Meralco's IDOL Hackathon 2024. <br>
 Developed by Team KuryentEEE.
 
+https://github.com/user-attachments/assets/cae5e981-6706-4620-8708-769bb8ec895a
+
 ## Overview
 
 $BOLTZ is a **Decentralized Net Metering and Tracking System** built on the Arbitrum Blockchain. It empowers users to:
